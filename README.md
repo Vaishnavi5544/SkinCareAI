@@ -1,393 +1,286 @@
-SkinCare AI -- Skin Disease Detection & Severity Assessment
+# SkinCare AI – Skin Disease Detection & Severity Assessment
 
-SkinCare AI is a deep learning-based image classification system
-designed to analyze skin images and predict the category and severity
-level of common skin conditions. The project uses MobileNetV2 transfer
-learning and provides an explainable prediction using Grad-CAM.
+A deep learning-based image classification system that analyzes skin images to predict common skin conditions along with their severity levels, using **MobileNetV2 transfer learning**, **Grad-CAM explainability**, and a **Streamlit** web interface.
 
-The model is integrated into a Streamlit web application where users
-can upload a skin image and view the predicted category, severity,
-confidence score, visual explanation, and general care guidance.
+---
 
-Disclaimer: This project is developed for academic and educational
-purposes. It is not a medical diagnostic tool and should not be used
-as a substitute for professional medical advice.
+## 📌 Project Overview
 
-Features
+SkinCare AI is an academic (MCA) deep learning project that classifies skin images into disease categories along with their severity levels (Mild, Moderate, Severe). The model is built on **MobileNetV2** using transfer learning and is deployed through an interactive **Streamlit** web application. To improve interpretability, the system uses **Grad-CAM** visualizations to highlight the image regions that influenced the model's prediction, and applies **Test-Time Augmentation (TTA)** to improve prediction robustness.
 
-Skin image classification using deep learning
+> ⚠️ This project is developed strictly for **academic and educational purposes** and is **not intended for real-world medical diagnosis**.
 
-Classification of Acne and Eczema severity levels
+---
 
-Normal image classification
+## ✨ Features
 
-Miscellaneous/Unrelated image detection
+- Image-based skin disease classification with severity levels
+- Transfer learning using pretrained MobileNetV2 (ImageNet weights)
+- Test-Time Augmentation (original + horizontally flipped image)
+- Grad-CAM based visual explainability
+- Interactive Streamlit web application
+- Confidence score display for predictions
+- General care guidance based on predicted class
 
-MobileNetV2-based transfer learning
+---
 
-Image preprocessing and data augmentation
+## 🩺 Classification Categories
 
-Test-Time Augmentation (TTA) using original and horizontally flipped
-images
+The model classifies input images into **8 classes**:
 
-Confidence score and class-wise confidence breakdown
+| # | Class Name | Description |
+|---|-------------|-------------|
+| 1 | Acne_Mild | Acne – Mild severity |
+| 2 | Acne_Moderate | Acne – Moderate severity |
+| 3 | Acne_Severe | Acne – Severe severity |
+| 4 | Eczema_Mild | Eczema – Mild severity |
+| 5 | Eczema_Moderate | Eczema – Moderate severity |
+| 6 | Eczema_Severe | Eczema – Severe severity |
+| 7 | Normal | Healthy/normal skin |
+| 8 | Xyz | Miscellaneous / unrelated images (negative class) |
 
-Grad-CAM based explainability
+> **Note:** `Xyz` is **NOT** a skin disease class. It contains miscellaneous/unrelated images such as birds, common objects, and other non-skin images. It is used as a **negative/unrelated class** to help the model reject irrelevant inputs.
 
-General care guidance
+---
 
-Streamlit-based interactive web interface
+## 📊 Dataset
 
-Project Categories
+**Dataset Used:** Multi-Class Skin Disease Image Dataset with Severity Levels
 
-The model uses the following 8 classes:
+| Split | Number of Images |
+|-------|------------------|
+| Training | 3,642 |
+| Validation | 777 |
+| Testing | 792 |
 
-Class               Meaning
+- **Image Size:** 224 × 224
+- **Number of Classes:** 8
 
-Acne_Mild         Acne -- Mild
-Acne_Moderate     Acne -- Moderate
-Acne_Severe       Acne -- Severe
-Eczema_Mild       Eczema -- Mild
-Eczema_Moderate   Eczema -- Moderate
-Eczema_Severe     Eczema -- Severe
-Normal            Normal skin image
-Xyz               Miscellaneous / unrelated image
+---
 
-Note about Xyz
+## 🛠️ Technologies Used
 
-Xyz is not a skin disease. It contains miscellaneous or unrelated
-images such as birds, common objects, and other non-skin images. It is
-retained as a negative/unrelated class so that the model does not force
-every uploaded image into a skin-disease category.
+- Python
+- TensorFlow
+- Keras
+- MobileNetV2
+- NumPy
+- Pandas
+- OpenCV
+- Matplotlib
+- Streamlit
+- Grad-CAM
+- Google Colab
 
-Dataset
+---
 
-The project uses the Multi-Class Skin Disease Image Dataset with
-Severity Levels.
+## 🧠 Model Architecture
 
-Dataset split used in the project:
+The model is built using **MobileNetV2** as a feature extractor, followed by custom classification layers.
 
-Training: 3,642 images
-
-Validation: 777 images
-
-Testing: 792 images
-
-Number of classes: 8
-
-Image size: 224 × 224 pixels
-
-Batch size: 32
-
-The dataset is organized into separate training, validation, and testing
-directories.
-
-Dataset/
-├── train/
-│   ├── Acne_Mild/
-│   ├── Acne_Moderate/
-│   ├── Acne_Severe/
-│   ├── Eczema_Mild/
-│   ├── Eczema_Moderate/
-│   ├── Eczema_Severe/
-│   ├── Normal/
-│   └── Xyz/
-│
-├── val/
-│   └── ...
-│
-└── test/
-    └── ...
-
-Technologies Used
-
-Python
-
-TensorFlow
-
-Keras
-
-MobileNetV2
-
-NumPy
-
-Pandas
-
-OpenCV
-
-Matplotlib
-
-Streamlit
-
-Grad-CAM
-
-Google Colab for model development and training
-
-Model Architecture
-
-The project uses MobileNetV2, a pretrained convolutional neural
-network, as the feature extraction backbone.
-
-The base MobileNetV2 model was initialized with ImageNet weights and
-followed by a custom classification head:
-
-Input Image
-    ↓
-Resize to 224 × 224
-    ↓
-Normalization
-    ↓
-MobileNetV2
-    ↓
+```
+Input (224 x 224 x 3)
+        │
+        ▼
+MobileNetV2 (Pretrained on ImageNet, Transfer Learning)
+        │
+        ▼
 Global Average Pooling
-    ↓
+        │
+        ▼
 Dropout
-    ↓
-Dense Layer (128 neurons)
-    ↓
+        │
+        ▼
+Dense Layer (128 neurons, ReLU)
+        │
+        ▼
 Dropout
-    ↓
-Dense Layer (8 classes)
-    ↓
-Softmax
-    ↓
-Predicted Class
+        │
+        ▼
+Dense Layer (8 classes, Softmax)
+        │
+        ▼
+Output: Predicted Class + Confidence Score
+```
 
-Why MobileNetV2?
+**Architecture Summary:**
+- Base Model: MobileNetV2 (pretrained on ImageNet)
+- Global Average Pooling layer
+- Dropout layer (for regularization)
+- Dense layer with 128 neurons
+- Dropout layer
+- Final Dense layer with 8 output classes and Softmax activation
 
-MobileNetV2 was selected because it is a lightweight and efficient
-architecture that can provide useful image features while being suitable
-for deployment in an application.
+---
 
-Image Preprocessing
+## 🖼️ Image Preprocessing
 
-Before being given to the model:
+Before being fed into the model, images undergo the following preprocessing steps:
 
-The uploaded image is resized to 224 × 224 pixels.
+- Resize images to **224 × 224**
+- Normalize pixel values to the range **0–1**
 
-Pixel values are normalized to the range 0--1.
+---
 
-The processed image is passed to the trained model.
+## 🔄 Data Augmentation
 
-Data Augmentation
+To improve model generalization, the following augmentation techniques are applied during training:
 
-Training images were augmented using:
+- Rotation
+- Width shift
+- Height shift
+- Zoom
+- Horizontal flip
 
-Rotation
+---
 
-Width shift
+## 🔁 Test-Time Augmentation (TTA)
 
-Height shift
+During inference, the model uses **Test-Time Augmentation** to improve prediction stability:
 
-Zoom
+1. The **original image** is passed through the model.
+2. A **horizontally flipped version** of the same image is also passed through the model.
+3. The prediction probabilities from both versions are **averaged** to obtain the final prediction.
 
-Horizontal flipping
+This helps reduce variance in predictions caused by orientation-sensitive features.
 
-Data augmentation helps the model learn from variations in image
-orientation and appearance.
+---
 
-Test-Time Augmentation (TTA)
+## 🔍 Explainable AI – Grad-CAM
 
-During application inference, the system uses two versions of the
-uploaded image:
+The project uses **Grad-CAM (Gradient-weighted Class Activation Mapping)** to visualize which regions of the input image most influenced the model's prediction.
 
-Original image
+- Highlights the image regions contributing to the predicted class
+- Improves transparency and trust in model predictions
+- Useful for understanding model behavior during evaluation
 
-Horizontally flipped image
+> ⚠️ Grad-CAM provides **visual interpretability only**. It **does not confirm a medical diagnosis** and should not be used as clinical evidence.
 
-The model predicts both images and their probabilities are averaged.
+---
 
-Original Image ──────┐
-                     ├──→ Average Probabilities → Final Prediction
-Flipped Image ───────┘
+## 📈 Model Performance
 
-This is used to make the prediction more consistent during inference.
+- **Test Accuracy:** **69.19%**
 
-Explainable AI -- Grad-CAM
+**Observations:**
+- The **Normal** and **Xyz** classes performed relatively better than the disease classes.
+- Some **moderate-severity** classes (e.g., distinguishing between Mild/Moderate/Severe stages) were more challenging for the model to classify correctly, likely due to subtle visual differences between severity levels.
 
-The project integrates Grad-CAM (Gradient-weighted Class Activation
-Mapping) to make the model prediction more understandable.
+> The reported accuracy reflects the actual model performance and has not been exaggerated or modified.
 
-Grad-CAM produces a heatmap showing the regions of the image that
-contributed to the model's prediction.
+---
 
-Original Image
-      ↓
-MobileNetV2
-      ↓
-Prediction
-      ↓
-Grad-CAM
-      ↓
-Heatmap / Overlay
+## 💻 Streamlit Application
 
-The application displays:
+The trained model is deployed using a **Streamlit** web application that allows users to upload a skin image and receive a prediction along with severity, confidence score, and Grad-CAM visualization.
 
-Original image
+---
 
-Grad-CAM heatmap
+## ⚙️ Application Workflow
 
-Grad-CAM overlay
-
-Grad-CAM highlights regions associated with the model's prediction. It
-does not prove that a highlighted region is a specific medical lesion.
-
-Model Performance
-
-The trained model achieved:
-
-Test Accuracy: 69.19%
-
-The model performed relatively better on the Normal and Xyz
-classes, while some moderate-severity classes were more challenging to
-classify.
-
-The classification report and confusion matrix were used to evaluate
-class-wise performance.
-
-Streamlit Application
-
-The trained model is deployed using Streamlit.
-
-Application Workflow
-
-Upload Skin Image
-        ↓
-Image Preprocessing
-        ↓
-Original + Flipped Image
-        ↓
-MobileNetV2 Prediction
-        ↓
-Final Class
-        ↓
-Disease + Severity
-        ↓
-Confidence Score
-        ↓
-Grad-CAM Explanation
-        ↓
+```
+   Upload Image
+        │
+        ▼
+   Preprocessing
+        │
+        ▼
+Original Image + Horizontally Flipped Image
+        │
+        ▼
+   MobileNetV2 Prediction (TTA)
+        │
+        ▼
+     Final Class
+        │
+        ▼
+  Disease & Severity
+        │
+        ▼
+   Confidence Score
+        │
+        ▼
+      Grad-CAM
+        │
+        ▼
 General Care Guidance
+```
 
-Prediction Mapping
+---
 
-For example:
+## 🗂️ Prediction Mapping
 
-Acne_Mild
-    ↓
-Disease: Acne
-Severity: Mild
+| Predicted Class | Disease | Severity |
+|------------------|---------|----------|
+| Acne_Mild | Acne | Mild |
+| Acne_Moderate | Acne | Moderate |
+| Acne_Severe | Acne | Severe |
+| Eczema_Mild | Eczema | Mild |
+| Eczema_Moderate | Eczema | Moderate |
+| Eczema_Severe | Eczema | Severe |
+| Normal | — | Healthy Skin |
+| Xyz | — | Unrelated / Non-skin Image |
 
-Eczema_Severe
-    ↓
-Disease: Eczema
-Severity: Severe
+---
 
-Normal
-    ↓
-Disease: Normal
-Severity: None
+## 📁 Project Structure
 
-Xyz
-    ↓
-Category: Miscellaneous
-Severity: Not Defined
-
-Project Structure
-
+```
 SkinCare_AI/
-│
 ├── app.py
 ├── best_skin_model.keras
 ├── README.md
-│
 └── Dataset/
     ├── train/
     ├── val/
     └── test/
+```
 
-The dataset does not need to be included in the GitHub repository if it
-is large or subject to dataset-sharing restrictions.
+---
 
-Installation
+## 🔧 Installation
 
-1. Clone the repository
+Install the required libraries using the following command:
 
-git clone <your-github-repository-link>
-cd SkinCare_AI
-
-2. Install required libraries
-
+```bash
 pip install tensorflow streamlit numpy pandas opencv-python matplotlib pillow
+```
 
-3. Make sure the trained model is present
+---
 
-Place:
+## ▶️ How to Run
 
-best_skin_model.keras
+1. Clone or download this repository.
+2. Ensure `app.py` and `best_skin_model.keras` are in the same directory.
+3. Install the required dependencies (see Installation section above).
+4. Run the Streamlit application:
 
-in the same folder as app.py.
-
-Run the Application
-
-Run the following command from the project folder:
-
+```bash
 streamlit run app.py
+```
 
-If required, you can also use:
+5. Open the local URL provided by Streamlit in your browser.
+6. Upload a skin image to view the predicted class, severity, confidence score, and Grad-CAM visualization.
 
-python -m streamlit run app.py
+---
 
-The Streamlit application will open in your browser.
+## 🚀 Future Improvements
 
-Future Improvements
+- Increase dataset size for better generalization across severity levels
+- Experiment with additional/deeper architectures for improved accuracy
+- Improve classification of moderate-severity classes
+- Add support for multi-image batch predictions
+- Enhance UI/UX of the Streamlit application
+- Deploy the application on a cloud platform for public access
 
-Use a larger and more diverse skin-image dataset
+---
 
-Add more skin conditions and severity categories
+## 🎓 Academic Purpose
 
-Evaluate model performance across different skin tones
+This project was developed as part of an **MCA (Master of Computer Applications)** academic project to demonstrate practical application of deep learning, transfer learning, model explainability, and web deployment concepts.
 
-Perform further fine-tuning of the pretrained model
+---
 
-Improve classification of visually similar severity levels
+## ⚠️ Disclaimer
 
-Obtain expert feedback for Grad-CAM explanations
-
-Develop a mobile application
-
-Add multilingual support
-
-Validate the system using clinically collected and expert-verified
-data
-
-Academic Purpose
-
-This project demonstrates the application of:
-
-Deep Learning
-
-Transfer Learning
-
-Image Classification
-
-Data Augmentation
-
-Test-Time Augmentation
-
-Explainable AI
-
-Model Evaluation
-
-Streamlit Deployment
-
-It was developed as an academic project to explore how deep learning can
-be applied to image-based skin condition classification and severity
-assessment.
-
-Disclaimer
-
-SkinCare AI is an academic/educational project and is not intended to
-diagnose, treat, or replace consultation with a qualified healthcare
-professional. Predictions and care guidance should not be considered
-medical advice
+This project is intended **solely for academic and educational purposes**. It is **not a certified medical tool** and **does not provide medical diagnosis**. Predictions generated by this system should **not** be used as a substitute for professional medical consultation. Always consult a qualified dermatologist or healthcare provider for accurate diagnosis and treatment of skin conditions.
